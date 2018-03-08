@@ -1,5 +1,6 @@
 /* TYPER */
 const TYPER = function () {
+	console.log("typer")
   if (TYPER.instance_) {
     return TYPER.instance_
   }
@@ -14,6 +15,7 @@ const TYPER = function () {
   this.word = null
   this.wordMinLength = 5
   this.guessedWords = 0
+  this.points = null
 
   this.init()
 }
@@ -22,6 +24,7 @@ window.TYPER = TYPER
 
 TYPER.prototype = {
   init: function () {
+	  console.log("sõnapaik")
     this.canvas = document.getElementsByTagName('canvas')[0]
     this.ctx = this.canvas.getContext('2d')
 
@@ -35,9 +38,11 @@ TYPER.prototype = {
   },
 
   loadWords: function () {
+	  console.log("laebsõnad")
     const xmlhttp = new XMLHttpRequest()
 
     xmlhttp.onreadystatechange = function () {
+		console.log("võtabsõnad")
       if (xmlhttp.readyState === 4 && (xmlhttp.status === 200 || xmlhttp.status === 0)) {
         const response = xmlhttp.responseText
         const wordsFromFile = response.split('\n')
@@ -53,6 +58,7 @@ TYPER.prototype = {
   },
 
   start: function () {
+	  console.log("starter")
     this.generateWord()
     this.word.Draw()
 
@@ -60,6 +66,7 @@ TYPER.prototype = {
   },
 
   generateWord: function () {
+	  console.log("genereeribsõna")
     const generatedWordLength = this.wordMinLength + parseInt(this.guessedWords / 5)
     const randomIndex = (Math.random() * (this.words[generatedWordLength].length - 1)).toFixed()
     const wordFromArray = this.words[generatedWordLength][randomIndex]
@@ -68,24 +75,35 @@ TYPER.prototype = {
   },
 
   keyPressed: function (event) {
+	  console.log("õigetähegakaob")
     const letter = String.fromCharCode(event.which)
+		document.getElementById("points").innerHTML = this.points;
 
     if (letter === this.word.left.charAt(0)) {
       this.word.removeFirstLetter()
-
-      if (this.word.left.length === 0) {
+		this.points += 1
+		
+    if (this.word.left.length === 0) {
         this.guessedWords += 1
-
-        this.generateWord()
-      }
-
-      this.word.Draw()
+		this.generateWord()
+			this.points = this.points + 1
+			document.getElementById("points").innerHTML = this.points;
+			console.log("Olemas")
+			console.log("this.points")
+	}
+	this.word.Draw()
+	} else {
+		if (this.points > 0) {
+	    this.points = this.points - 3
+	    document.getElementById("points").innerHTML = this.points;
     }
   }
+}
 }
 
 /* WORD */
 const Word = function (word, canvas, ctx) {
+	console.log("teebsõna")
   this.word = word
   this.left = this.word
   this.canvas = canvas
@@ -94,6 +112,7 @@ const Word = function (word, canvas, ctx) {
 
 Word.prototype = {
   Draw: function () {
+	  console.log("kirjutab keskpaika")
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
     this.ctx.textAlign = 'center'
@@ -102,6 +121,7 @@ Word.prototype = {
   },
 
   removeFirstLetter: function () {
+	  console.log("kaotabtähe")
     this.left = this.left.slice(1)
   }
 }
@@ -109,6 +129,7 @@ Word.prototype = {
 /* HELPERS */
 function structureArrayByWordLength (words) {
   let tempArray = []
+  console.log("sõnapikus")
 
   for (let i = 0; i < words.length; i++) {
     const wordLength = words[i].length
@@ -120,7 +141,9 @@ function structureArrayByWordLength (words) {
   return tempArray
 }
 
+
 window.onload = function () {
+	console.log("laeblehe")
   const typer = new TYPER()
   window.typer = typer
 }
